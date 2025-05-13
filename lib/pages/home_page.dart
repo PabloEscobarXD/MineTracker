@@ -1,7 +1,7 @@
-
 import 'package:flutter/material.dart';
-import '../pages/like_page.dart';
-import '../pages/profile_page.dart';
+import 'objectives_page.dart';
+import 'profile_page.dart';
+import '../classes/worldCard.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -13,16 +13,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 0;
-  static const TextStyle optionStyle = TextStyle(
-    fontSize: 30,
-    fontWeight: FontWeight.bold,
-  );
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromRGBO(197, 183, 155, 1),
       appBar: AppBar(
+        backgroundColor: const Color.fromRGBO(144, 238, 144, 1),
         title: Text(widget.title),
         leading: Builder(
           builder: (context) {
@@ -35,59 +31,73 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
       ),
-      body: Center(),
       drawer: Drawer(
         child: ListView(
-          // Important: Remove any padding from the ListView.
           padding: EdgeInsets.zero,
           children: [
             const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue),
-              child: Text('Drawer Header'),
+              decoration: BoxDecoration(color: Color.fromRGBO(42, 110, 42, 0.945)),
+              child: Text('MineTracker', style: TextStyle(color: Colors.white, fontSize: 24)),
             ),
             ListTile(
-              title: const Text('Home'),
-              selected: _selectedIndex == 0,
+              title: const Text('Inicio'),
+              leading: const Icon(Icons.home),
               onTap: () {
-                // Update the state of the app
-                //n _onItemTapped(1);
-                // Then close the drawer
                 Navigator.pop(context);
-                
-                Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const MyHomePage(title: 'Home Page')),
-                );
+                Navigator.popUntil(context, (route) => route.isFirst);
               },
             ),
             ListTile(
-              title: const Text('Profile'),
-              selected: _selectedIndex == 1,
+              title: const Text('Perfil'),
+              leading: const Icon(Icons.person),
               onTap: () {
-                // Update the state of the app
-                // _onItemTapped(1);
-                // Then close the drawer
                 Navigator.pop(context);
                 Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfilePage(title: 'Profile Page')),
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfilePage(title: 'Perfil de Usuario')),
                 );
               },
             ),
-            ListTile(
-              title: const Text('Liked'),
-              selected: _selectedIndex == 2,
-              onTap: () {
-                Navigator.pop(context);
-
-                Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const LikePage(title: 'Liked Page')),
-                );
-              },
-            )
           ],
         ),
+      ),
+      body: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          WorldCard(
+            imagePath: 'assets/icons/mcOverworld.png',
+            title: 'Overworld',
+            subtitle: 'Minerales, Stronghold',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ObjectivesPage(world: 'Overworld')),
+              );
+            },
+          ),
+          WorldCard(
+            imagePath: 'assets/icons/mcNether.png',
+            title: 'Nether',
+            subtitle: 'Materiales de pociones, netherite y fortalezas',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ObjectivesPage(world: 'Nether')),
+              );
+            },
+          ),
+          WorldCard(
+            imagePath: 'assets/icons/mcEnd.png',
+            title: 'End',
+            subtitle: 'Dragón, Endcities y Elytras.',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ObjectivesPage(world: 'End')),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
