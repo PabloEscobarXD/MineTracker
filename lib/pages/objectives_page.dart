@@ -48,14 +48,14 @@ class _ObjectivesPageState extends State<ObjectivesPage> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: const Color.fromRGBO(197, 183, 155, 1), // <-- Fondo beige
+        backgroundColor: const Color.fromRGBO(197, 183, 155, 1),
         appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 100, 180, 100), // <-- AppBar verde claro
+          backgroundColor: const Color.fromARGB(255, 100, 180, 100),
           title: Text(widget.dimension.name),
           bottom: const TabBar(
-            indicatorColor: Color.fromRGBO(42, 110, 42, 1), // verde oscuro
-            labelColor: Colors.black,                      // tab activo
-            unselectedLabelColor: Colors.white70,          // tabs inactivos
+            indicatorColor: Color.fromRGBO(42, 110, 42, 1),
+            labelColor: Colors.black,                    
+            unselectedLabelColor: Colors.white70,  
             tabs: [
               Tab(icon: Icon(Icons.build), text: "Objetos"),
               Tab(icon: Icon(Icons.location_city), text: "Estructuras"),

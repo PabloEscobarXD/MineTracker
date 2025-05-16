@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart'; // ✅ IMPORTAR Flutter
+import 'package:flutter/material.dart';
 
 List<String> nombresObjetivosCompletados = [];
 List<Widget> historialObjetivos = [];

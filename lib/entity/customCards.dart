@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-// Función para WorldCard
 Widget buildWorldCard({
   required String imagePath,
   required String title,
@@ -56,7 +55,6 @@ Widget buildWorldCard({
   );
 }
 
-// Función para ObjectiveCard
 Widget buildObjectiveCard({
   required IconData icon,
   required String name,
