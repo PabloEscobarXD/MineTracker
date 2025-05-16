@@ -31,3 +31,4 @@ Esta aplicación nace con el propósito de ofrecer a los jugadores una herramien
 
 - **Repositorio GitHub**: https://github.com/PabloEscobarXD/MineTracker
 - **Diagrama de Clases**: https://drive.google.com/file/d/1Y2gQo0by_Gu1Gvm_eJYRcyHU8pbpMvKd/view?usp=sharing
+- **Video Presentación: **
