@@ -1,98 +1,45 @@
 import 'package:flutter/material.dart';
-import '../data/objective_data.dart';
-import '../classes/ObjectiveCard.dart';
+import 'package:newapp/data/globals.dart';
+import 'package:newapp/entity/dimension.dart';
+import 'package:newapp/entity/estructura.dart';
+import 'package:newapp/entity/item.dart';
+import '../pages/objective_detail_page.dart';
+import '../entity/customCards.dart';
 
 class ObjectivesPage extends StatefulWidget {
-  const ObjectivesPage({super.key, required this.world});
-
-  final String world;
+  final Dimension dimension;
+  const ObjectivesPage({super.key, required this.dimension});
 
   @override
   State<ObjectivesPage> createState() => _ObjectivesPageState();
 }
 
 class _ObjectivesPageState extends State<ObjectivesPage> {
-  late List<Map<String, dynamic>> likedItems;
-  late List<Map<String, dynamic>> likedStructures;
+  late List<Item> visibleItems;
+  late List<Estructura> visibleEstructuras;
 
   @override
   void initState() {
     super.initState();
-
-    switch (widget.world) {
-      case 'Overworld':
-        likedItems = overworldItems;
-        likedStructures = overworldStructures;
-        break;
-      case 'Nether':
-        likedItems = netherItems;
-        likedStructures = netherStructures;
-        break;
-      case 'End':
-        likedItems = endItems;
-        likedStructures = endStructures;
-        break;
-      default:
-        likedItems = [];
-        likedStructures = [];
-    }
+    visibleItems = widget.dimension.items
+        .where((item) => !nombresObjetivosCompletados.contains(item.name))
+        .toList();
+    visibleEstructuras = widget.dimension.estructuras
+        .where((estructura) => !nombresObjetivosCompletados.contains(estructura.name))
+        .toList();
   }
-
-  void showItemDetails(Map<String, dynamic> item) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+  
+  void completarObjetivo({required IconData icon,required String name, required String description}) {
+    
+    nombresObjetivosCompletados.add(name);
+    historialObjetivos.add(
+      buildObjectiveCard(
+        icon: icon,
+        name: name,
+        description: description,
+        onCompleted: () {},
+        readOnly: true,
       ),
-      builder: (_) {
-        return DraggableScrollableSheet(
-          expand: false,
-          initialChildSize: 0.5,
-          minChildSize: 0.3,
-          maxChildSize: 0.9,
-          builder: (context, scrollController) {
-            return SingleChildScrollView(
-              controller: scrollController,
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(item['icon'], size: 48),
-                  const SizedBox(height: 12),
-                  Text(
-                    item['name'],
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    item['description'],
-                    style: const TextStyle(fontSize: 16),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-
-  Widget buildCardList(List<Map<String, dynamic>> dataList) {
-    return ListView.builder(
-      itemCount: dataList.length,
-      itemBuilder: (context, index) {
-        final item = dataList[index];
-        return ObjectiveCard(
-          icon: item['icon'],
-          name: item['name'],
-          description: item['description'],
-          onDetails: () => showItemDetails(item),
-        );
-      },
     );
   }
 
@@ -101,9 +48,14 @@ class _ObjectivesPageState extends State<ObjectivesPage> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
+        backgroundColor: const Color.fromRGBO(197, 183, 155, 1), // <-- Fondo beige
         appBar: AppBar(
-          title: Text(widget.world),
+          backgroundColor: const Color.fromARGB(255, 100, 180, 100), // <-- AppBar verde claro
+          title: Text(widget.dimension.name),
           bottom: const TabBar(
+            indicatorColor: Color.fromRGBO(42, 110, 42, 1), // verde oscuro
+            labelColor: Colors.black,                      // tab activo
+            unselectedLabelColor: Colors.white70,          // tabs inactivos
             tabs: [
               Tab(icon: Icon(Icons.build), text: "Objetos"),
               Tab(icon: Icon(Icons.location_city), text: "Estructuras"),
@@ -112,11 +64,76 @@ class _ObjectivesPageState extends State<ObjectivesPage> {
         ),
         body: TabBarView(
           children: [
-            buildCardList(likedItems),
-            buildCardList(likedStructures),
+            ListView(
+            children: visibleItems.asMap().entries.map((entry) {
+              final index = entry.key;
+              final item = entry.value;
+              return buildObjectiveCard(
+                icon: item.icon,
+                name: item.name,
+                description: item.description,
+                onCompleted: () {
+                  setState(() {
+                    completarObjetivo(
+                      icon: item.icon,
+                      name: item.name,
+                      description: item.description,
+                    );
+                    visibleItems.removeAt(index);
+                  });
+                },
+                onTapDetail: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ObjectiveDetailPage(
+                        icon: item.icon,
+                        name: item.name,
+                        description: item.description,
+                      ),
+                    ),
+                  );
+                },
+              );
+            }).toList(),
+          ),
+            ListView(
+              children: visibleEstructuras.asMap().entries.map<Widget>((entry) {
+                final index = entry.key;
+                final estructura = entry.value;
+                return buildObjectiveCard(
+                  icon: estructura.icon,
+                  name: estructura.name,
+                  description: estructura.description,
+                  onCompleted: () {
+                    setState(() {
+                      completarObjetivo(
+                        icon: estructura.icon,
+                        name: estructura.name,
+                        description: estructura.description,
+                      );
+                      visibleEstructuras.removeAt(index);
+                    });
+                  },
+                  onTapDetail: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ObjectiveDetailPage(
+                          icon: estructura.icon,
+                          name: estructura.name,
+                          description: estructura.description,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }).toList()
+            ),
           ],
         ),
       ),
     );
   }
 }
+

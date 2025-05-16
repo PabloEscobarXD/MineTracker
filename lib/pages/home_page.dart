@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'objectives_page.dart';
 import 'profile_page.dart';
-import '../classes/worldCard.dart';
+import '../entity/customCards.dart';
+import '../data/objective_data.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -13,6 +14,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,7 +46,10 @@ class _MyHomePageState extends State<MyHomePage> {
               leading: const Icon(Icons.home),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.popUntil(context, (route) => route.isFirst);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MyHomePage(title: 'Menu')),
+                );
               },
             ),
             ListTile(
@@ -54,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ProfilePage(title: 'Perfil de Usuario')),
+                  MaterialPageRoute(builder: (context) => ProfilePage(title: 'Perfil de Usuario')),
                 );
               },
             ),
@@ -64,36 +69,36 @@ class _MyHomePageState extends State<MyHomePage> {
       body: ListView(
         padding: EdgeInsets.zero,
         children: [
-          WorldCard(
+          buildWorldCard(
             imagePath: 'assets/icons/mcOverworld.png',
             title: 'Overworld',
             subtitle: 'Minerales, Stronghold',
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ObjectivesPage(world: 'Overworld')),
+                MaterialPageRoute(builder: (context) => ObjectivesPage(dimension: overworld)),
               );
             },
           ),
-          WorldCard(
+          buildWorldCard(
             imagePath: 'assets/icons/mcNether.png',
             title: 'Nether',
-            subtitle: 'Materiales de pociones, netherite y fortalezas',
+            subtitle: 'Varas de Blaze, Fortalezas del Nether y Bastiones',
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ObjectivesPage(world: 'Nether')),
+                MaterialPageRoute(builder: (context) => ObjectivesPage(dimension: nether)),
               );
             },
           ),
-          WorldCard(
+          buildWorldCard(
             imagePath: 'assets/icons/mcEnd.png',
             title: 'End',
-            subtitle: 'Dragón, Endcities y Elytras.',
+            subtitle: 'Dragón del End, Endcities y Elytras',
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ObjectivesPage(world: 'End')),
+                MaterialPageRoute(builder: (context) => ObjectivesPage(dimension: end)),
               );
             },
           ),

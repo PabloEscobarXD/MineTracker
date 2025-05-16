@@ -15,7 +15,7 @@ class _SplashPageState extends State<SplashPage> {
     super.initState();
     Timer(const Duration(seconds: 2), () {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const MyHomePage(title: 'Menu')),
+        MaterialPageRoute(builder: (_) => const MyHomePage(title: 'MineTracker')),
       );
     });
   }
