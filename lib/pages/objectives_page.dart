@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:newapp/data/globals.dart';
-import 'package:newapp/entity/dimension.dart';
-import 'package:newapp/entity/estructura.dart';
-import 'package:newapp/entity/item.dart';
+import 'package:provider/provider.dart';
+import '../provider/app_data.dart';
+import '../entity/dimension.dart';
+import '../entity/estructura.dart';
+import '../entity/item.dart';
 import '../pages/objective_detail_page.dart';
 import '../entity/customCards.dart';
 
@@ -21,26 +22,17 @@ class _ObjectivesPageState extends State<ObjectivesPage> {
   @override
   void initState() {
     super.initState();
+    final completados = context.read<AppData>().nombresObjetivosCompletados;
     visibleItems = widget.dimension.items
-        .where((item) => !nombresObjetivosCompletados.contains(item.name))
+        .where((item) => !completados.contains(item.name))
         .toList();
     visibleEstructuras = widget.dimension.estructuras
-        .where((estructura) => !nombresObjetivosCompletados.contains(estructura.name))
+        .where((estructura) => !completados.contains(estructura.name))
         .toList();
   }
-  
-  void completarObjetivo({required IconData icon,required String name, required String description}) {
-    
-    nombresObjetivosCompletados.add(name);
-    historialObjetivos.add(
-      buildObjectiveCard(
-        icon: icon,
-        name: name,
-        description: description,
-        onCompleted: () {},
-        readOnly: true,
-      ),
-    );
+
+  void completarObjetivo(String name) {
+    context.read<AppData>().marcarObjetivoComoCompletado(name);
   }
 
   @override
@@ -54,8 +46,8 @@ class _ObjectivesPageState extends State<ObjectivesPage> {
           title: Text(widget.dimension.name),
           bottom: const TabBar(
             indicatorColor: Color.fromRGBO(42, 110, 42, 1),
-            labelColor: Colors.black,                    
-            unselectedLabelColor: Colors.white70,  
+            labelColor: Colors.black,
+            unselectedLabelColor: Colors.white70,
             tabs: [
               Tab(icon: Icon(Icons.build), text: "Objetos"),
               Tab(icon: Icon(Icons.location_city), text: "Estructuras"),
@@ -65,40 +57,36 @@ class _ObjectivesPageState extends State<ObjectivesPage> {
         body: TabBarView(
           children: [
             ListView(
-            children: visibleItems.asMap().entries.map((entry) {
-              final index = entry.key;
-              final item = entry.value;
-              return buildObjectiveCard(
-                icon: item.icon,
-                name: item.name,
-                description: item.description,
-                onCompleted: () {
-                  setState(() {
-                    completarObjetivo(
-                      icon: item.icon,
-                      name: item.name,
-                      description: item.description,
-                    );
-                    visibleItems.removeAt(index);
-                  });
-                },
-                onTapDetail: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ObjectiveDetailPage(
-                        icon: item.icon,
-                        name: item.name,
-                        description: item.description,
+              children: visibleItems.asMap().entries.map((entry) {
+                final index = entry.key;
+                final item = entry.value;
+                return buildObjectiveCard(
+                  icon: item.icon,
+                  name: item.name,
+                  description: item.description,
+                  onCompleted: () {
+                    setState(() {
+                      completarObjetivo(item.name);
+                      visibleItems.removeAt(index);
+                    });
+                  },
+                  onTapDetail: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ObjectiveDetailPage(
+                          icon: item.icon,
+                          name: item.name,
+                          description: item.description,
+                        ),
                       ),
-                    ),
-                  );
-                },
-              );
-            }).toList(),
-          ),
+                    );
+                  },
+                );
+              }).toList(),
+            ),
             ListView(
-              children: visibleEstructuras.asMap().entries.map<Widget>((entry) {
+              children: visibleEstructuras.asMap().entries.map((entry) {
                 final index = entry.key;
                 final estructura = entry.value;
                 return buildObjectiveCard(
@@ -107,11 +95,7 @@ class _ObjectivesPageState extends State<ObjectivesPage> {
                   description: estructura.description,
                   onCompleted: () {
                     setState(() {
-                      completarObjetivo(
-                        icon: estructura.icon,
-                        name: estructura.name,
-                        description: estructura.description,
-                      );
+                      completarObjetivo(estructura.name);
                       visibleEstructuras.removeAt(index);
                     });
                   },
@@ -128,7 +112,7 @@ class _ObjectivesPageState extends State<ObjectivesPage> {
                     );
                   },
                 );
-              }).toList()
+              }).toList(),
             ),
           ],
         ),
@@ -136,4 +120,3 @@ class _ObjectivesPageState extends State<ObjectivesPage> {
     );
   }
 }
-

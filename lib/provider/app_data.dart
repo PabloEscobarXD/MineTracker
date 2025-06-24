@@ -1,7 +1,71 @@
-  import 'package:flutter/material.dart';
-  import '../entity/item.dart';
-  import '../entity/estructura.dart';
-  import '../entity/dimension.dart';
+import 'package:flutter/material.dart';
+import '../entity/item.dart';
+import '../entity/estructura.dart';
+import '../entity/dimension.dart';
+import '../service/dbhelper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+enum AppTheme { overworld, nether, end }
+
+class AppData extends ChangeNotifier {
+
+  String _userName = "";
+  String _userEmail = "";
+  String? _userPhoto;
+
+  String get userName => _userName;
+  String get userEmail => _userEmail;
+  String? get userPhoto => _userPhoto;
+
+  Future<void> loadUserProfile() async {
+    final user = await DatabaseHelper().getUser();
+    if (user != null) {
+      _userName = user['name'];
+      _userEmail = user['email'];
+      _userPhoto = user['photo'];
+      notifyListeners();
+    }
+  }
+
+  Future<void> saveUserProfile(String name, String email, String? photo) async {
+    print("Guardando perfil...");
+    _userName = name;
+    _userEmail = email;
+    _userPhoto = photo;
+    await DatabaseHelper().insertUser({
+      'name': name,
+      'email': email,
+      'photo': photo,
+    });
+    print("Perfil guardado en DB");
+    notifyListeners();
+  }
+
+
+
+  Future<void> deleteUserProfile() async {
+    await DatabaseHelper().deleteUser();
+    _userName = "";
+    _userEmail = "";
+    _userPhoto = null;
+    notifyListeners();
+  }
+  
+  List<String> _nombresObjetivosCompletados = [];
+
+  List<String> get nombresObjetivosCompletados => _nombresObjetivosCompletados;
+
+  void marcarObjetivoComoCompletado(String nombre) {
+    if (!_nombresObjetivosCompletados.contains(nombre)) {
+      _nombresObjetivosCompletados.add(nombre);
+      notifyListeners();
+    }
+  }
+
+  void resetearObjetivos() {
+    _nombresObjetivosCompletados.clear();
+    notifyListeners();
+  }
 
   final Dimension overworld = Dimension(
     name: 'Overworld',
@@ -132,3 +196,6 @@
       )
     ],
   );
+
+  List<Dimension> get dimensiones => [overworld, nether, end];
+}
